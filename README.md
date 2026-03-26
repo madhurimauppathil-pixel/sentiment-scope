@@ -12,6 +12,14 @@
 The project is named **Lexara** (from *lexis* — the vocabulary of a language) and follows a dark luxury editorial design language: deep charcoal backgrounds, gold typography, Cormorant Garamond serif display font, and a rotating 3D wireframe globe that reacts to your prediction.
 
 ---
+Live Dashboard 
+
+
+
+https://madhurimauppathil-pixel.github.io/sentiment-scope/
+
+
+
 
 ## Project Requirements Checklist
 
