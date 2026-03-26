@@ -1,4 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lexara — Sentiment Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#0a0804}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
 /* ─── ML ENGINE ─────────────────────────────────────────────────────────── */
 const DATASET = [
@@ -166,26 +182,19 @@ function Scene3D({ sentiment }) {
       tRef.current += 0.008;
       const t = tRef.current;
       ctx.clearRect(0,0,W,H);
-
-      // Background
       ctx.fillStyle = T.bg;
       ctx.fillRect(0,0,W,H);
 
       const cx = W/2, cy = H/2;
       const R  = Math.min(W,H)*0.32;
-
-      // Draw 3D rotating wireframe sphere
       const latLines = 10, lonLines = 14;
-      ctx.strokeStyle = color.replace(")",",0.18)").replace("rgb","rgba").replace("#","");
 
-      // Helper: project 3D to 2D with perspective
       const proj = (x,y,z) => {
         const fov = 600;
         const scale = fov/(fov+z);
         return [cx+x*scale, cy+y*scale, scale];
       };
 
-      // Latitude rings
       for(let i=0;i<=latLines;i++){
         const phi = (i/latLines)*Math.PI;
         const pts = [];
@@ -194,10 +203,8 @@ function Scene3D({ sentiment }) {
           const x0 = R*Math.sin(phi)*Math.cos(theta);
           const y0 = R*Math.cos(phi);
           const z0 = R*Math.sin(phi)*Math.sin(theta);
-          // Rotate Y
           const rx = x0*Math.cos(t) + z0*Math.sin(t);
           const rz = -x0*Math.sin(t) + z0*Math.cos(t);
-          // Rotate X slightly
           const ry2 = y0*Math.cos(0.3) - rz*Math.sin(0.3);
           const rz2 = y0*Math.sin(0.3) + rz*Math.cos(0.3);
           pts.push(proj(rx,ry2,rz2));
@@ -210,7 +217,6 @@ function Scene3D({ sentiment }) {
         ctx.stroke();
       }
 
-      // Longitude arcs
       for(let j=0;j<lonLines;j++){
         const theta = (j/lonLines)*2*Math.PI + t;
         const pts = [];
@@ -232,7 +238,6 @@ function Scene3D({ sentiment }) {
         ctx.stroke();
       }
 
-      // Glow core
       const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.6);
       grad.addColorStop(0, glow.replace("0.4","0.15"));
       grad.addColorStop(1,"transparent");
@@ -241,7 +246,6 @@ function Scene3D({ sentiment }) {
       ctx.arc(cx,cy,R*0.6,0,Math.PI*2);
       ctx.fill();
 
-      // Floating data points orbiting
       for(let k=0;k<18;k++){
         const angle = (k/18)*Math.PI*2 + t*(1+k*0.05);
         const r2    = R*(0.85+0.25*Math.sin(t+k));
@@ -303,7 +307,7 @@ function Counter({ to, suffix="" }) {
 }
 
 /* ─── MAIN APP ──────────────────────────────────────────────────────────── */
-export default function App() {
+function App() {
   const [pipe, setPipe]       = useState(null);
   const [input, setInput]     = useState("");
   const [model, setModel]     = useState("lr");
@@ -344,10 +348,8 @@ export default function App() {
     },800);
   };
 
-  /* ── BOOT ── */
   if (!ready) return (
     <div style={{minHeight:"100vh",background:T.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif"}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');`}</style>
       <div style={{textAlign:"center",position:"relative"}}>
         <div style={{fontSize:11,fontFamily:"'Rajdhani',sans-serif",letterSpacing:".4em",color:T.gold,textTransform:"uppercase",marginBottom:48,opacity:.6}}>Lexara</div>
         <div style={{position:"relative",width:320,height:1,background:"rgba(201,168,76,0.1)",margin:"0 auto 20px"}}>
@@ -369,7 +371,6 @@ export default function App() {
   return (
     <div style={{background:T.bg, color:T.cream, fontFamily:"'Cormorant Garamond',serif", overflowX:"hidden", minHeight:"100vh"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:2px}
         @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -379,53 +380,33 @@ export default function App() {
         @keyframes scan{0%{top:-100%}100%{top:200%}}
         .fade{animation:fadeUp .6s ease forwards}
         .floating{animation:float 6s ease-in-out infinite}
-
-        /* NAV */
         nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid rgba(201,168,76,.08);background:rgba(10,8,4,.85);backdrop-filter:blur(24px);}
         .nav-a{cursor:pointer;background:none;border:none;font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,240,232,.35);padding:6px 16px;border-radius:2px;transition:all .2s;}
-        .nav-a:hover{color:${T.gold};}
-        .nav-a.on{color:${T.gold};border-bottom:1px solid ${T.gold};}
-
-        /* GOLD LINE */
-        .gold-rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,${T.gold},transparent);margin:16px auto;}
-
-        /* BUTTONS */
-        .btn-gold{cursor:pointer;border:1px solid ${T.gold};background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(232,201,106,.08));color:${T.goldLight};font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:14px 36px;border-radius:2px;transition:all .3s;position:relative;overflow:hidden;}
-        .btn-gold::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,${T.gold},${T.goldLight});opacity:0;transition:opacity .3s;}
+        .nav-a:hover{color:#c9a84c;}
+        .nav-a.on{color:#c9a84c;border-bottom:1px solid #c9a84c;}
+        .gold-rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:16px auto;}
+        .btn-gold{cursor:pointer;border:1px solid #c9a84c;background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(232,201,106,.08));color:#e8c96a;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:14px 36px;border-radius:2px;transition:all .3s;position:relative;overflow:hidden;}
+        .btn-gold::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#c9a84c,#e8c96a);opacity:0;transition:opacity .3s;}
         .btn-gold:hover::before{opacity:.15;}
         .btn-gold:hover{box-shadow:0 0 40px rgba(201,168,76,.35);transform:translateY(-1px);}
         .btn-ghost{cursor:pointer;border:1px solid rgba(245,240,232,.15);background:transparent;color:rgba(245,240,232,.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:12px 28px;border-radius:2px;transition:all .2s;}
         .btn-ghost:hover{border-color:rgba(245,240,232,.35);color:rgba(245,240,232,.9);}
-        .btn-send{cursor:pointer;border:none;background:linear-gradient(135deg,${T.gold},${T.goldLight});color:${T.bg};font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:13px 32px;border-radius:2px;transition:all .25s;}
+        .btn-send{cursor:pointer;border:none;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#0a0804;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:13px 32px;border-radius:2px;transition:all .25s;}
         .btn-send:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,168,76,.45);}
         .btn-send:disabled{opacity:.3;cursor:not-allowed;}
-
-        /* CHIP */
         .chip{cursor:pointer;border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.04);color:rgba(245,240,232,.4);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:5px 14px;border-radius:1px;transition:all .15s;}
-        .chip:hover,.chip.on{border-color:${T.gold};color:${T.gold};background:rgba(201,168,76,.1);}
-
-        /* CARD GLASS */
+        .chip:hover,.chip.on{border-color:#c9a84c;color:#c9a84c;background:rgba(201,168,76,.1);}
         .card{background:rgba(26,21,16,.75);border:1px solid rgba(201,168,76,.15);border-radius:4px;backdrop-filter:blur(20px);}
         .card-glow{animation:rotateGlow 4s ease-in-out infinite;}
-
-        /* TEXTAREA */
-        textarea{background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.2);border-radius:2px;padding:18px 20px;font-family:'Cormorant Garamond',serif;font-size:16px;color:${T.cream};resize:none;width:100%;transition:all .25s;line-height:1.7;letter-spacing:.02em;}
+        textarea{background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.2);border-radius:2px;padding:18px 20px;font-family:'Cormorant Garamond',serif;font-size:16px;color:#f5f0e8;resize:none;width:100%;transition:all .25s;line-height:1.7;letter-spacing:.02em;}
         textarea:focus{outline:none;border-color:rgba(201,168,76,.6);background:rgba(245,240,232,.05);box-shadow:0 0 0 1px rgba(201,168,76,.2),0 0 32px rgba(201,168,76,.1);}
         textarea::placeholder{color:rgba(245,240,232,.15);font-style:italic;}
-
-        /* HIST ROW */
         .hist-row{cursor:pointer;padding:12px 16px;border:1px solid transparent;border-radius:2px;transition:all .15s;}
         .hist-row:hover{border-color:rgba(201,168,76,.2);background:rgba(201,168,76,.04);}
-
-        /* SECTION TAG */
         .sec-tag{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:rgba(201,168,76,.5);}
-
-        /* 3D METRIC BAR */
         .mbar-wrap{height:6px;background:rgba(245,240,232,.05);border-radius:1px;overflow:visible;position:relative;}
         .mbar{height:100%;border-radius:1px;transition:width 1s cubic-bezier(.4,0,.2,1);position:relative;}
         .mbar::after{content:'';position:absolute;top:0;right:0;bottom:0;width:40px;background:inherit;filter:blur(6px);opacity:.8;}
-
-        /* SCAN LINE */
         .scanline{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);animation:scan 4s linear infinite;pointer-events:none;}
       `}</style>
 
@@ -452,36 +433,28 @@ export default function App() {
 
       {/* ═══════════════ HERO ═══════════════ */}
       <section ref={homeRef} style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"120px 48px 80px",position:"relative",overflow:"hidden"}}>
-        {/* Decorative orbs */}
         <div style={{...parallaxStyle(0.4),position:"absolute",top:"10%",left:"5%",width:"40vw",height:"40vw",borderRadius:"50%",background:"radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%)",pointerEvents:"none"}}/>
         <div style={{...parallaxStyle(0.7),position:"absolute",bottom:"10%",right:"5%",width:"30vw",height:"30vw",borderRadius:"50%",background:"radial-gradient(circle,rgba(139,37,0,.08) 0%,transparent 70%)",pointerEvents:"none"}}/>
 
-        {/* 3D Globe */}
         <div className="floating" style={{...parallaxStyle(0.2),width:"min(420px,70vw)",height:"min(420px,70vw)",position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",opacity:.7,zIndex:0}}>
           <Scene3D sentiment={result?.sentiment||null}/>
         </div>
 
-        {/* Hero text */}
         <div className="fade" style={{position:"relative",zIndex:1,textAlign:"center",maxWidth:720}}>
           <div className="sec-tag" style={{marginBottom:28}}>Emotion Intelligence · Real-Time Analysis</div>
-
           <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:"clamp(52px,8vw,100px)",lineHeight:.95,letterSpacing:"-.02em",color:T.cream,marginBottom:8}}>
             <em style={{color:T.gold,fontStyle:"italic"}}>Lexara</em><br/>Reads Every<br/>Emotion
           </h1>
-
           <div className="gold-rule"/>
-
           <p style={{fontSize:"clamp(16px,2vw,20px)",fontWeight:300,color:"rgba(245,240,232,.45)",lineHeight:1.7,letterSpacing:".03em",marginBottom:40,fontStyle:"italic"}}>
             Lexara understands what your words truly mean. Paste any text — a review, a message, a comment — and instantly uncover the emotion behind it.
           </p>
-
           <div style={{display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap"}}>
             <button className="btn-gold" onClick={()=>scrollTo(analyzeRef,"analyse")}>Begin Analysis →</button>
             <button className="btn-ghost" onClick={()=>scrollTo(metricsRef,"metrics")}>View Performance</button>
           </div>
         </div>
 
-        {/* 3D Floating stats */}
         <div className="fade" style={{position:"relative",zIndex:1,display:"flex",gap:0,marginTop:80,border:`1px solid ${T.border}`,borderRadius:4,overflow:"hidden",background:"rgba(10,8,4,.8)",backdropFilter:"blur(20px)",animationDelay:".3s"}}>
           {[
             {n:<Counter to={pipe.trainSize}/>,l:"Training Samples"},
@@ -496,7 +469,6 @@ export default function App() {
           ))}
         </div>
 
-        {/* Scroll hint */}
         <div style={{position:"absolute",bottom:32,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8,color:"rgba(201,168,76,.25)",animation:"float 3s ease-in-out infinite"}}>
           <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:10,letterSpacing:".3em",textTransform:"uppercase"}}>Scroll</span>
           <div style={{width:1,height:40,background:`linear-gradient(${T.gold},transparent)`}}/>
@@ -505,9 +477,7 @@ export default function App() {
 
       {/* ═══════════════ ANALYSE ═══════════════ */}
       <section ref={analyzeRef} style={{padding:"100px 48px",position:"relative"}}>
-        {/* Decorative vertical line */}
         <div style={{position:"absolute",left:48,top:0,bottom:0,width:1,background:`linear-gradient(${T.bg},${T.gold}33,${T.bg})`}}/>
-
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div className="fade" style={{textAlign:"center",marginBottom:64}}>
             <div className="sec-tag" style={{marginBottom:20}}>§ 01 — Analysis Engine</div>
@@ -518,9 +488,7 @@ export default function App() {
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:24,alignItems:"start"}}>
-            {/* LEFT */}
             <div>
-              {/* Model selector */}
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
                 <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:10,color:"rgba(201,168,76,.4)",letterSpacing:".25em",textTransform:"uppercase"}}>Classifier</span>
                 {[{id:"lr",l:"Logistic Regression"},{id:"nb",l:"Naïve Bayes"}].map(({id,l})=>(
@@ -528,7 +496,6 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Input card */}
               <TiltCard intensity={4} style={{marginBottom:16}}>
                 <div className="card card-glow" style={{padding:28,position:"relative",overflow:"hidden"}}>
                   <div className="scanline"/>
@@ -550,7 +517,6 @@ export default function App() {
                 </div>
               </TiltCard>
 
-              {/* Example chips */}
               <div style={{marginBottom:28}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:10,color:"rgba(201,168,76,.3)",letterSpacing:".25em",textTransform:"uppercase",marginBottom:12}}>Try an example</div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -560,14 +526,12 @@ export default function App() {
                 </div>
               </div>
 
-              {/* RESULT */}
               {result && (()=>{
                 const c=SENT[result.sentiment], conf=Math.max(...Object.values(result.proba));
                 return (
                   <TiltCard intensity={5} className="fade">
                     <div className="card" style={{border:`1px solid ${c.color}44`,background:c.bg,overflow:"hidden",position:"relative"}}>
                       <div className="scanline"/>
-                      {/* Header */}
                       <div style={{padding:"24px 28px",borderBottom:`1px solid ${c.color}22`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <div>
                           <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:10,color:"rgba(245,240,232,.3)",letterSpacing:".25em",textTransform:"uppercase",marginBottom:8}}>Detected Sentiment</div>
@@ -585,7 +549,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Probability breakdown */}
                       <div style={{padding:"20px 28px",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,borderBottom:`1px solid rgba(245,240,232,.05)`}}>
                         {["positive","negative","neutral"].map(cl=>{
                           const cc=SENT[cl], val=result.proba[cl];
@@ -606,7 +569,6 @@ export default function App() {
                         })}
                       </div>
 
-                      {/* Tokens */}
                       {result.tokens.length>0&&(
                         <div style={{padding:"16px 28px"}}>
                           <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:10,color:"rgba(201,168,76,.3)",letterSpacing:".25em",textTransform:"uppercase",marginBottom:10}}>Tokens</div>
@@ -623,7 +585,6 @@ export default function App() {
               })()}
             </div>
 
-            {/* SIDEBAR */}
             <div>
               <TiltCard intensity={6}>
                 <div className="card" style={{padding:20}}>
@@ -663,14 +624,12 @@ export default function App() {
             <div className="gold-rule"/>
           </div>
 
-          {/* Model toggle */}
           <div style={{display:"flex",justifyContent:"center",gap:8,marginBottom:48}}>
             {[{id:"lr",l:"Logistic Regression"},{id:"nb",l:"Naïve Bayes"}].map(({id,l})=>(
               <button key={id} className={`chip ${model===id?"on":""}`} onClick={()=>setModel(id)} style={{fontSize:12,padding:"8px 22px"}}>{l}</button>
             ))}
           </div>
 
-          {/* Top stat cards */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,marginBottom:32}}>
             {[
               {label:"Overall Accuracy",val:M.accuracy},
@@ -692,7 +651,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Per-class cards */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
             {["positive","negative","neutral"].map(cl=>{
               const cc=SENT[cl],pc=M.perClass[cl];
@@ -769,3 +727,8 @@ export default function App() {
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
